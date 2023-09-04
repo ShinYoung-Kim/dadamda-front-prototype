@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { NavLink, NavLinkProps, useNavigate } from 'react-router-dom';
 
 import LoginModal from '../organisms/LoginModal';
@@ -13,6 +13,9 @@ import MenuIcon from '../../assets/icons/MenuIcon.png';
 import Tooltip from '../atoms/Tooltip';
 import Overlay from '../atoms/Overlay';
 import defaultUserProfileImage from '../../assets/images/Avatar.png';
+import { useGetUserProfileImage } from '../../api/user';
+import { CircularProgress } from '@mui/material';
+import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
 
 const headerPanelMenus = [{
     isVisibleWithoutLogin: true,
@@ -91,8 +94,34 @@ function Header() {
         />
     }
 
-    const isLogin = localStorage.getItem('token') ? true : false;
-    const profileImageURL = localStorage.getItem('profileImageURL');
+    const token = localStorage.getItem('token');
+    const isLogin = token ? true : false;
+    const queryClient = useQueryClient();
+    if (isLogin) {
+        queryClient.invalidateQueries(['userImage']);
+    }
+
+    const { isLoading, data } = useQuery(
+        ['userImage'],
+        () => token && useGetUserProfileImage(token),
+        {
+            select(data) {
+                return data.data.profileUrl;
+            },
+            refetchOnWindowFocus: false,
+        }
+    );
+
+    if (isLoading) {
+        return <CircularProgress
+            sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+            }}
+        />;
+    }
 
     return (
         <TooltipContainer>
@@ -106,8 +135,8 @@ function Header() {
                 </HeaderPanel>
                 <LargeRightPanel>
                     {isLogin ?
-                        (profileImageURL ?
-                            <ProfileImage source={profileImageURL} size={24} onClick={showLoginTooltip} />
+                        (data ?
+                            <ProfileImage source={data} size={24} onClick={showLoginTooltip} />
                             : <ProfileImage source={defaultUserProfileImage} size={24} onClick={showLoginTooltip} />
                         ) :
                         <Button buttonStyle='text-only' label={"로그인/회원가입"} onClick={showLoginModal} />
