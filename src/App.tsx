@@ -56,7 +56,7 @@ function App() {
                     <Route index element={<NotReadyTemplate />} />
                   </Route>
                   <Route path='/trending' element={<TrendingPage />}></Route>
-                  <Route path='/google-login' element={<GoogleOAuthLoginpage setError={setError} />}></Route>
+                  <Route path='/google-login' element={<GoogleOAuthLoginpage />}></Route>
                   <Route path='/privacy' element={<PrivacyPolicyPage />}></Route>
                 </Routes>
               </BrowserRouter>

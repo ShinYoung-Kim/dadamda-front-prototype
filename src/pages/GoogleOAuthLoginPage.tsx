@@ -8,40 +8,12 @@ interface GoogleOAuthLoginPageProps {
     setError: Dispatch<SetStateAction<Partial<null | string>>>,
 }
 
-function GoogleOAuthLoginpage({ setError }: GoogleOAuthLoginPageProps) {
+function GoogleOAuthLoginpage() {
     const navigate = useNavigate();
-
-    function getUserProfileImage(token: string) {
-        return fetch(GET_USER_PROFILE_IMAGE, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "X-AUTH-TOKEN": token,
-            },
-        }).then((response) => {
-            return response.json().then(body => {
-                if (response.ok) {
-                    return body;
-                } else {
-                    throw new Error(body.resultCode);
-                }
-            })
-        })
-            .then(data => (data.data.profileUrl))
-            .catch(err => setError(err.message));
-    }
 
     useEffect(() => {
         const token = new URL(window.location.href).searchParams.get("token");
-        // const [userInformation, setUserInformation] = useContext(LoginContext);
-        // setUserInformation({
-        //     profileImageURL: null,
-        //     token: token,
-        // });
         token && localStorage.setItem('token', token);
-        token && getUserProfileImage(token)
-            .then(userProfileImage => localStorage.setItem('profileImageURL', userProfileImage))
-            .catch(error => setError(error.message));
         return navigate('/scrap/list');
     }, [navigate])
     return (
