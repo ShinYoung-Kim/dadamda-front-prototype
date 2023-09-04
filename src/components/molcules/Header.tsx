@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { NavLink, NavLinkProps, useNavigate } from 'react-router-dom';
 
 import LoginModal from '../organisms/LoginModal';
@@ -13,9 +13,9 @@ import MenuIcon from '../../assets/icons/MenuIcon.png';
 import Tooltip from '../atoms/Tooltip';
 import Overlay from '../atoms/Overlay';
 import defaultUserProfileImage from '../../assets/images/Avatar.png';
-import { useGetUserProfileImage } from '../../api/user';
+import { getUserImageQuery, useGetUserProfileImage } from '../../api/user';
 import { CircularProgress } from '@mui/material';
-import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 const headerPanelMenus = [{
     isVisibleWithoutLogin: true,
@@ -36,12 +36,12 @@ const headerPanelMenus = [{
 }];
 
 function Header() {
-    // const [userInformation, setUserInformation] = useContext(LoginContext);
     const [isClicked, setIsClicked] = useState(false);
     const toggleMobileNavbar = () => setIsClicked(!isClicked);
     const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
     const [isLoginTooltipVisible, setIsLoginTooltipVisible] = useState(false);
     const navigate = useNavigate();
+    const [isLogin, setIsLogin] = useState(false);
 
     const showLoginModal = () => {
         setIsLoginModalVisible(true);
@@ -60,10 +60,6 @@ function Header() {
     }
 
     const logout = () => {
-        // setUserInformation({
-        //     profileImageURL: null,
-        //     token: null,
-        // });
         localStorage.removeItem('token');
         navigate('/main');
         hideLoginTooltip();
@@ -95,13 +91,13 @@ function Header() {
     }
 
     const token = localStorage.getItem('token');
-    const isLogin = token ? true : false;
     const queryClient = useQueryClient();
-    if (isLogin) {
-        queryClient.invalidateQueries(['userImage']);
-    }
+    useEffect(() => {
+        setIsLogin(!!token);
+        token && queryClient.invalidateQueries(['userImage']);
+    }, [isLogin, queryClient, token]);
 
-    const { isLoading, data } = useQuery(
+    const { data } = useQuery(
         ['userImage'],
         () => token && useGetUserProfileImage(token),
         {
@@ -111,17 +107,6 @@ function Header() {
             refetchOnWindowFocus: false,
         }
     );
-
-    if (isLoading) {
-        return <CircularProgress
-            sx={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-            }}
-        />;
-    }
 
     return (
         <TooltipContainer>

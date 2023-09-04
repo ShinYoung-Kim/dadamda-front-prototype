@@ -3,6 +3,7 @@ import ScrapListHeader from '../molcules/ScrapListHeader';
 import EmptyScrapContainer from '../organisms/EmptyScrapContainer';
 import ExistListScrapContainer from '../organisms/ExistListScrapContainer';
 import { contentProps } from '../../types/ContentType';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface ListTemplateProps {
     lists: contentProps['content'][],
@@ -12,7 +13,10 @@ interface ListTemplateProps {
 }
 
 function ListTemplate({ lists, count }: ListTemplateProps) {
-
+    const queryClient = useQueryClient();
+    useEffect(() => {
+        queryClient.invalidateQueries({ queryKey: ['userImage'] });
+    })
     return (
         <>
             <ScrapListHeader type='전체' count={count} />

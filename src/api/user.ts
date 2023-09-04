@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import { GET_USER_PROFILE_IMAGE } from "../secret";
 
 const fetchUserProfileImage = async(token: string) => {
@@ -23,4 +24,17 @@ const fetchUserProfileImage = async(token: string) => {
 export const useGetUserProfileImage = async(token: string) => {
     const userProfileImage = await fetchUserProfileImage(token);
     return userProfileImage;
+}
+
+export function getUserImageQuery(token : string) {
+    return useQuery(
+        ['userImage'],
+        () => token && useGetUserProfileImage(token),
+        {
+            select(data) {
+                return data.data.profileUrl;
+            },
+            refetchOnWindowFocus: false,
+        }
+    );
 }
