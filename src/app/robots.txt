@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /$
+Allow: /dadamda-logo128.png
+Disallow: /*.css$
+Disallow: /*js$
+Disallow: /scrap/
+Disallow: /user/
+Disallow: /privacy/
