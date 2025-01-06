@@ -27,3 +27,7 @@ dist-ssr
 src/secret.ts
 .env.sentry-build-plugin
 storybook-static
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
