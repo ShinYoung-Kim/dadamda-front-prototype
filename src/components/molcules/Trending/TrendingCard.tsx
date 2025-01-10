@@ -1,16 +1,9 @@
 import theme from "@/assets/styles/theme";
 import DefaultBoardThumbnail from "@/components/atoms/Board/DefaultBoardThumbnail";
 import { getTimeDiff } from "@/hooks/useCalculateDateDiff";
-import {
-	Box,
-	Button,
-	Divider,
-	Grid,
-	ImageList,
-	Typography,
-} from "@mui/material";
+import { Box, Button, Divider, ImageList, Typography } from "@mui/material";
 import ThumbnailImage from "@/components/atoms/ThumbnailImage";
-import { HeartIcon, PasteIcon, ViewIcon } from "@/components/atoms/Icon";
+import { HeartIcon, ViewIcon } from "@/components/atoms/Icon";
 import { useModal } from "@/hooks/useModal";
 import { useBoardAtom } from "@/hooks/useBoardAtom";
 import CopyBoardButton from "@/components/atoms/Board/CopyBoardButton";
@@ -19,7 +12,6 @@ import { logEvent } from "@/utility/amplitude";
 import { useBoardContentAtom } from "@/hooks/useBoardContentAtom";
 import { Profiler, useState } from "react";
 import ProfileImage from "@/components/atoms/ProfileImage";
-import { Interaction } from "scheduler/tracing";
 
 export interface TrendingCardProps {
 	profileUrl: string;
@@ -66,9 +58,7 @@ function TrendingCard({
 		setCounts((prev) => {
 			return {
 				...prev,
-				heartCnt: isHeart
-					? prev.heartCnt + 1
-					: prev.heartCnt - 1,
+				heartCnt: isHeart ? prev.heartCnt + 1 : prev.heartCnt - 1,
 			};
 		});
 	};
@@ -110,33 +100,24 @@ function TrendingCard({
 				>
 					<Typography
 						sx={{
-							color: theme.color
-								.Gray_090,
+							color: theme.color.Gray_090,
 							fontSize: "14px",
 							lineHeight: "150%",
 							fontWeight: "400",
 						}}
 					>
-						<b>{nickname}</b>님이 보드를
-						공유했어요.
+						<b>{nickname}</b>님이 보드를 공유했어요.
 					</Typography>
 					<Box>
 						<Typography
 							sx={{
-								color: theme
-									.color
-									.Gray_080,
+								color: theme.color.Gray_080,
 								fontSize: "12px",
 								lineHeight: "160%",
 								fontWeight: "400",
 							}}
 						>
-							{
-								tagMapping[
-									tag as keyof typeof tagMapping
-								]
-							}{" "}
-							•{" "}
+							{tagMapping[tag as keyof typeof tagMapping]} •{" "}
 							{getTimeDiff(createdAt)}
 						</Typography>
 					</Box>
@@ -158,9 +139,7 @@ function TrendingCard({
 		const foundImages = [];
 		const maxImages = 4;
 
-		outerLoop: for (const content of Object.values(
-			parsedContents
-		)) {
+		outerLoop: for (const content of Object.values(parsedContents)) {
 			for (const item of content as any[]) {
 				const thumbnailUrl = item.thumbnailUrl;
 				if (isImageExist(thumbnailUrl)) {
@@ -176,8 +155,7 @@ function TrendingCard({
 	}
 
 	function ThumbnailImageList() {
-		const { mutate } =
-			useIncreaseTrendingViewCount(changeViewCount);
+		const { mutate } = useIncreaseTrendingViewCount(changeViewCount);
 
 		const handleIncreaeViewCount = () => {
 			mutate(uuid);
@@ -195,9 +173,7 @@ function TrendingCard({
 					boardUUID: uuid,
 					title: title,
 					description: description,
-					tag: tagMapping[
-						tag as keyof typeof tagMapping
-					],
+					tag: tagMapping[tag as keyof typeof tagMapping],
 					type: "trending",
 				};
 			});
@@ -213,14 +189,7 @@ function TrendingCard({
 		return (
 			<Profiler
 				id="ImageList"
-				onRender={(
-					id,
-					phase,
-					actualDuration,
-					baseDuration,
-					startTime,
-					commitTime
-				) => {
+				onRender={(id, phase, actualDuration, baseDuration, startTime, commitTime) => {
 					console.log({
 						id,
 						phase,
@@ -237,8 +206,7 @@ function TrendingCard({
 					sx={{
 						width: "100%",
 						borderRadius: "8px",
-						backgroundColor:
-							theme.color.Gray_030,
+						backgroundColor: theme.color.Gray_030,
 						"& > div > img": {
 							borderRadius: "8px",
 						},
@@ -247,26 +215,10 @@ function TrendingCard({
 					}}
 					onClick={handleClickBoardView}
 				>
-					{images.length === 0 && (
-						<DefaultBoardThumbnail />
-					)}
-					{images.map(
-						(
-							image: string,
-							index: number
-						) => {
-							return (
-								<ThumbnailImage
-									key={
-										index
-									}
-									thumbnailUrl={
-										image
-									}
-								/>
-							);
-						}
-					)}
+					{images.length === 0 && <DefaultBoardThumbnail />}
+					{images.map((image: string, index: number) => {
+						return <ThumbnailImage key={index} thumbnailUrl={image} />;
+					})}
 				</ImageList>
 			</Profiler>
 		);
@@ -305,13 +257,7 @@ function TrendingCard({
 
 		return (
 			<Button
-				startIcon={
-					<HeartIcon
-						width="14"
-						height="14"
-						fill={theme.color.Gray_070}
-					/>
-				}
+				startIcon={<HeartIcon width="14" height="14" fill={theme.color.Gray_070} />}
 				sx={buttonTextStyle}
 				onClick={handleChangeHeart}
 			>
@@ -327,9 +273,7 @@ function TrendingCard({
 					<CopyBoardButton
 						boardId={uuid}
 						isOnlyIcon
-						changeShareCount={
-							changeShareCount
-						}
+						changeShareCount={changeShareCount}
 					/>
 				}
 				sx={buttonTextStyle}
@@ -340,8 +284,7 @@ function TrendingCard({
 	}
 
 	function ViewButton() {
-		const { mutate } =
-			useIncreaseTrendingViewCount(changeViewCount);
+		const { mutate } = useIncreaseTrendingViewCount(changeViewCount);
 
 		const handleIncreaeViewCount = () => {
 			mutate(uuid);
@@ -359,9 +302,7 @@ function TrendingCard({
 					boardUUID: uuid,
 					title: title,
 					description: description,
-					tag: tagMapping[
-						tag as keyof typeof tagMapping
-					],
+					tag: tagMapping[tag as keyof typeof tagMapping],
 					type: "trending",
 				};
 			});
@@ -372,13 +313,7 @@ function TrendingCard({
 
 		return (
 			<Button
-				startIcon={
-					<ViewIcon
-						width="14"
-						height="14"
-						fill={theme.color.Gray_070}
-					/>
-				}
+				startIcon={<ViewIcon width="14" height="14" fill={theme.color.Gray_070} />}
 				sx={buttonTextStyle}
 				onClick={handleClickBoardView}
 			>
@@ -421,8 +356,7 @@ function TrendingCard({
 						height: "100%",
 						borderRadius: "8px",
 						overflow: "hidden",
-						backgroundColor:
-							theme.color.Gray_030,
+						backgroundColor: theme.color.Gray_030,
 						boxSizing: "border-box",
 					}}
 				>
